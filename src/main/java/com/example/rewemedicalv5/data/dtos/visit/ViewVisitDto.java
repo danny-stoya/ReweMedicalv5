@@ -1,14 +1,14 @@
 package com.example.rewemedicalv5.data.dtos.visit;
 
-import com.example.rewemedicalv5.data.dtos.doctor.ViewDoctorDto;
+import com.example.rewemedicalv5.data.dtos.diagnosis.ViewDiagnosisDto;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
-public record VisitViewDto(
+public record ViewVisitDto(
         @NotNull
         Long id,
 
@@ -25,6 +25,6 @@ public record VisitViewDto(
         @NotNull
         BigDecimal fee,
 
-        List<VisitViewDiagnosisDto> diagnoses
+        Set<ViewDiagnosisDto> diagnoses
 ) {
 }

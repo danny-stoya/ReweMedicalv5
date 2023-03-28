@@ -1,10 +1,11 @@
 package com.example.rewemedicalv5.services;
 
+import com.example.rewemedicalv5.data.dtos.doctor.EditDoctorDto;
+import com.example.rewemedicalv5.data.dtos.doctor.ViewDoctorDto;
 import com.example.rewemedicalv5.data.dtos.visit.*;
-import com.example.rewemedicalv5.data.entities.Diagnosis;
+import com.example.rewemedicalv5.data.entities.Patient;
 import com.example.rewemedicalv5.data.entities.Visit;
 import com.example.rewemedicalv5.data.repositories.VisitRepository;
-import com.example.rewemedicalv5.exceptions.VisitNotFound;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -18,94 +19,57 @@ public class VisitService {
     private final FeeService feeService;
     private final DiagnosisService diagnosisService;
 
-
-    public Long create(NewVisitDto dto) {
-        return visitRepository.save(toEntity(dto)).getId();
+    public void create(NewVisitDto dto) {
+        visitRepository.save(toEntity(dto));
     }
 
-    public List<VisitViewDto> getAll() {
+    private Visit toEntity(NewVisitDto dto) {
+        Patient patient = patientService.findByUid(dto.patientUid());
+        return new Visit(
+          dto.dateTime(),
+                patient,
+                doctorService.findByUid(dto.doctorUid()),
+
+
+        );
+    }
+
+    public List<ViewVisitDto> getAll() {
         return toViewList(
                 visitRepository.findAll()
         );
     }
 
-    private List<VisitViewDto> toViewList(List<Visit> all) {
-       return all
-               .stream()
-               .map(this::toView)
-               .toList();
-    }
-
-    public VisitViewDto findById(Long id) {
-        return toView(
-                visitRepository
-                        .findById(id)
-                        .orElseThrow(() -> new VisitNotFound(id))
-        );
-    }
-
-//    public VisitViewDto update(Long id, UpdateDoctorDto dto) {
+//    public ViewDoctorDto findById(Long id) {
 //        return toView(
-//                visitRepository.save(
-//                        updateDoctor(udin, dto)
+//                doctorRepository
+//                        .findById(id)
+//                        .orElseThrow(() -> new DoctorNotFound(id))
+//        );
+//    }
+
+// DoctorNotFound   public ViewVisitDto update(String uid, EditDoctorDto dto) {
+//        return toView(
+//                doctorRepository.save(
+//                        updateDoctor(uid, dto)
 //                )
 //        );
 //    }
 
-    public void delete(Long id) {
-        visitRepository.deleteById(id);
-    }
+//    public void delete(Long id) {
+//        doctorRepository.deleteById(id);
+//    }
 
-    private Visit toEntity(NewVisitDto dto) {
-        var patient = patientService.findByUid(dto.patientUpin());
-        return new Visit(
-                dto.dateTime(),
-                patient,
-                doctorService.findByUid(dto.doctorUpin()),
-                patient.isHasInsurance() ? feeService.geInsuranceCover() : feeService.getDefaultFee(),
-                getDiagnoses(dto)
-        );
-    }
+//    public void delete(String uid) {
+//        doctorRepository.delete(
+//                findByUid(uid)
+//        );
+//    }
 
-    private VisitViewDto toView(Visit visit) {
-        return new VisitViewDto(
-                visit.getId(),
-                visit.getDateTime(),
-                getPatient(visit),
-                getDoctor(visit),
-                visit.getPatient().isHasInsurance() ? feeService.geInsuranceCover().getValue() : feeService.getDefaultFee().getValue(),
-                getDiagnoses(visit)
-        );
-    }
+//    public ViewDoctorDto findViewByUid(String uid) {
+//        return toView(findByUid(uid));
+//    }
 
-    private static List<VisitViewDiagnosisDto> getDiagnoses(Visit visit) {
-        return visit.getDiagnoses().stream()
-                .map(diagnosis -> new VisitViewDiagnosisDto(
-                        diagnosis.getCode(),
-                        diagnosis.getDescription()
 
-                ))
-                .toList();
-    }
 
-    private static VisitDoctorDto getDoctor(Visit visit) {
-        return new VisitDoctorDto(
-                visit.getDoctor().getName(),
-                visit.getDoctor().getUid()
-        );
-    }
-
-    private static VisitPatientDto getPatient(Visit visit) {
-        return new VisitPatientDto(
-                visit.getPatient().getName(),
-                visit.getPatient().isHasInsurance(),
-                visit.getPatient().getUid()
-        );
-    }
-
-    private List<Diagnosis> getDiagnoses(NewVisitDto dto) {
-        return dto.diagnoses().stream()
-                .map(diagnosis -> diagnosisService.findByCode(diagnosis.code()))
-                .toList();
-    }
 }

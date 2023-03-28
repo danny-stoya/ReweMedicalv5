@@ -12,7 +12,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "visits")
@@ -20,17 +22,21 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Visit extends BaseEntity {
+@IdClass(VisitId.class)
+public class Visit {
+    @Id
     @NotNull
     @FutureOrPresent
     @Column(nullable = false, name = "date_time")
-    @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-    private LocalDateTime dateTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime visitTime;
 
+    @Id
     @NotNull
     @ManyToOne(optional = false)
     private Patient patient;
 
+    @Id
     @NotNull
     @ManyToOne(optional = false)
     private Doctor doctor;
@@ -39,5 +45,5 @@ public class Visit extends BaseEntity {
     private Fee fee;
 
     @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-    private List<Diagnosis> diagnoses = new ArrayList<>();
+    private Set<Diagnosis> diagnoses = new HashSet<>();
 }

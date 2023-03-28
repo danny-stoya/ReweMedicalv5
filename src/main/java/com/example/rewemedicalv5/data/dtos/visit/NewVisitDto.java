@@ -6,21 +6,22 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public record NewVisitDto(
         //validate by time and doctor
         @NotNull
         @FutureOrPresent
-        @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
         LocalDateTime dateTime,
 
         @NotNull
-        String patientUpin,
+        String patientUid,
 
         @NotNull
-        String doctorUpin,
+        String doctorUid,
 
-        List<NewVisitDiagnosisDto> diagnoses
+        Set<String> diagnoses
 
 ) {
 }

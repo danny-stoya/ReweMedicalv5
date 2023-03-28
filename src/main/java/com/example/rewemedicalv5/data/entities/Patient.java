@@ -25,6 +25,12 @@ public class Patient extends BaseEntity {
     @ManyToOne
     private Doctor gp;
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "patient", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     Set<Insurance> insurances;
+
+    public Patient addInsurance(Insurance insurance) {
+        this.insurances.add(insurance);
+        insurance.setPatient(this);
+        return this;
+    }
 }

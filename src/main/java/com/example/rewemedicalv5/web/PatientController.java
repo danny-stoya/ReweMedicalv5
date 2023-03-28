@@ -1,5 +1,6 @@
 package com.example.rewemedicalv5.web;
 
+import com.example.rewemedicalv5.data.dtos.patient.AddPatientInsuranceDto;
 import com.example.rewemedicalv5.data.dtos.patient.NewPatientDto;
 import com.example.rewemedicalv5.data.dtos.patient.UpdatePatientDto;
 import com.example.rewemedicalv5.data.dtos.patient.ViewPatientDto;
@@ -67,6 +68,19 @@ public class PatientController {
                         .build(dto.uid())
                 )
                 .build();
+    }
+
+    @PostMapping("/{uid}/add-insurance")
+    public ResponseEntity<ViewPatientDto> addInsurance(
+            @PathVariable
+            @NotBlank(message = INVALID_UID)
+            String uid,
+
+            @RequestBody
+            @Valid
+            AddPatientInsuranceDto dto
+    ) {
+        return ResponseEntity.ok(patientService.addInsurance(uid, dto));
     }
 
     @PutMapping("/{uid}/edit")

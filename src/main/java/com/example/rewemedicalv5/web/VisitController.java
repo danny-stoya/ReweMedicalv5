@@ -1,11 +1,11 @@
 package com.example.rewemedicalv5.web;
 
+import com.example.rewemedicalv5.data.dtos.doctor.EditDoctorDto;
+import com.example.rewemedicalv5.data.dtos.doctor.NewDoctorDto;
 import com.example.rewemedicalv5.data.dtos.doctor.ViewDoctorDto;
-import com.example.rewemedicalv5.data.dtos.visit.NewVisitDto;
-import com.example.rewemedicalv5.data.dtos.visit.VisitViewDto;
 import com.example.rewemedicalv5.services.VisitService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +13,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
+import static com.example.rewemedicalv5.exceptions.InvalidValidationMessage.INVALID_UID;
+
 @RestController
 @RequestMapping("/api/visits")
 @AllArgsConstructor
 public class VisitController {
     private final VisitService visitService;
-
     @GetMapping("/all")
-    public ResponseEntity<List<VisitViewDto>> getAll() {
+    public ResponseEntity<List<ViewDoctorDto>> getAll() {
         var visits = visitService.getAll();
 
         if (visits.isEmpty()) {
@@ -30,73 +31,73 @@ public class VisitController {
         return ResponseEntity.ok(visits);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<VisitViewDto> findById(
-            @PathVariable
-            @Positive(message = "Invalid ID")
-            Long id
-    ) {
-        return ResponseEntity.ok(visitService.findById(id));
-    }
-
-//    @GetMapping()
-//    public ResponseEntity<VisitViewDto> findByDate(
-//            @RequestParam
-//            @NotBlank(message = "Invalid UPIN")
-//            LocalDate date
+//    @GetMapping("/{id}")
+//    public ResponseEntity<ViewDoctorDto> findById(
+//            @PathVariable
+//            @Positive(message = "Invalid ID")
+//            Long id
 //    ) {
-//        return ResponseEntity.ok(doctorService.findByUpin(udin));
+//        return ResponseEntity.ok(doctorService.findById(id));
 //    }
 
+    @GetMapping("/{uid}")
+    public ResponseEntity<ViewDoctorDto> findViewByUid(
+            @PathVariable
+            @NotBlank(message = INVALID_UID)
+            String uid
+    ) {
+        return ResponseEntity.ok(visitService.findViewByUid(uid));
+    }
+
     @PostMapping("/add")
-    public ResponseEntity<VisitViewDto> create(
+    public ResponseEntity<ViewDoctorDto> create(
             @RequestBody
-            @Valid NewVisitDto dto,
+            @Valid NewDoctorDto dto,
 
             UriComponentsBuilder uriComponentsBuilder
     ) {
 
-        Long id = visitService.create(dto);
+        visitService.create(dto);
 
         return ResponseEntity
                 .created(uriComponentsBuilder
                         .path("/api/visits")
-                        .path("/{id}")
-                        .build(id)
+                        .path("/{uid}")
+                        .build(dto.uid())
                 )
                 .build();
     }
 
-//    @PutMapping("/{id}/update")
-//    public ResponseEntity<ViewDoctorDto> update(
-//            @PathVariable
-//            @Positive(message = "Invalid ID")
-//            Long id,
-//
-//            @RequestBody
-//            @Valid
-//            UpdateDoctorDto dto
-//    ) {
-//        return ResponseEntity.ok(visitService.update(udin, dto));
-//    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ViewDoctorDto> delete(
+    @PutMapping("/{uid}/edit")
+    public ResponseEntity<ViewDoctorDto> update(
             @PathVariable
-            @Positive
-            Long id
+            @NotBlank(message = INVALID_UID)
+            String uid,
+
+            @RequestBody
+            @Valid
+            EditDoctorDto dto
     ) {
-        visitService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(doctorService.update(uid, dto));
     }
 
-//    @DeleteMapping
-//    public ResponseEntity<ViewDoctorDto> deleteByName(
-//            @RequestParam
-//            @NotBlank
-//            String udin
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<ViewDoctorDto> delete(
+//            @PathVariable
+//            @Positive
+//            Long id
 //    ) {
-//        doctorService.delete(udin);
+//        doctorService.delete(id);
 //        return ResponseEntity.noContent().build();
 //    }
+
+    @DeleteMapping("/{uid}")
+    public ResponseEntity<ViewDoctorDto> deleteByName(
+            @PathVariable
+            @NotBlank
+            String uid
+    ) {
+        doctorService.delete(uid);
+        return ResponseEntity.noContent().build();
+    }
 }

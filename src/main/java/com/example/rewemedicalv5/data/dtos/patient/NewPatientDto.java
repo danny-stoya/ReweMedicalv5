@@ -1,5 +1,6 @@
 package com.example.rewemedicalv5.data.dtos.patient;
 
+import com.example.rewemedicalv5.data.dtos.insurance.NewInsuranceDto;
 import com.example.rewemedicalv5.exceptions.InvalidValidationMessage;
 import com.example.rewemedicalv5.exceptions.validations.UniquePatientUid;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -20,8 +21,6 @@ public record NewPatientDto(
         @UniquePatientUid
         String uid,
 
-        String gpUid,
-
-        Set<Long> insurances
+        String gpUid
 ) {
 }

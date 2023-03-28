@@ -6,7 +6,8 @@ import lombok.NonNull;
 import java.time.LocalDate;
 
 public record VisitDoctorDto(
-        String name,
-        String upin
+        String uid,
+        String name
+
 ) {
 }

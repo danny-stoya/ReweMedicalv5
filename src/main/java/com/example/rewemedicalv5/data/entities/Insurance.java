@@ -2,6 +2,7 @@ package com.example.rewemedicalv5.data.entities;
 
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,4 +20,6 @@ import java.time.LocalDate;
 public class Insurance extends BaseEntity {
     private LocalDate startDate;
     private LocalDate endDate;
+    @ManyToOne
+    private Patient patient;
 }

@@ -21,4 +21,5 @@ public class Fee extends BaseEntity {
     @NotNull
     @PositiveOrZero
     private BigDecimal value;
+    private LocalDate date;
 }
