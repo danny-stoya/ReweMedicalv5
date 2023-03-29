@@ -1,27 +1,31 @@
 package com.example.rewemedicalv5.web;
 
-import com.example.rewemedicalv5.data.dtos.doctor.EditDoctorDto;
-import com.example.rewemedicalv5.data.dtos.doctor.NewDoctorDto;
-import com.example.rewemedicalv5.data.dtos.doctor.ViewDoctorDto;
+import com.example.rewemedicalv5.data.dtos.visit.NewVisitDto;
+import com.example.rewemedicalv5.data.dtos.visit.ViewVisitDto;
 import com.example.rewemedicalv5.services.VisitService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
+import static com.example.rewemedicalv5.exceptions.FailedValidationMessage.INVALID_ID;
 
-import static com.example.rewemedicalv5.exceptions.InvalidValidationMessage.INVALID_UID;
 
 @RestController
 @RequestMapping("/api/visits")
 @AllArgsConstructor
+@Validated
 public class VisitController {
     private final VisitService visitService;
+
     @GetMapping("/all")
-    public ResponseEntity<List<ViewDoctorDto>> getAll() {
+    public ResponseEntity<List<ViewVisitDto>> getAll() {
         var visits = visitService.getAll();
 
         if (visits.isEmpty()) {
@@ -31,73 +35,43 @@ public class VisitController {
         return ResponseEntity.ok(visits);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<ViewDoctorDto> findById(
-//            @PathVariable
-//            @Positive(message = "Invalid ID")
-//            Long id
-//    ) {
-//        return ResponseEntity.ok(doctorService.findById(id));
-//    }
-
-    @GetMapping("/{uid}")
-    public ResponseEntity<ViewDoctorDto> findViewByUid(
+    @GetMapping("/{id}")
+    public ResponseEntity<ViewVisitDto> findById(
             @PathVariable
-            @NotBlank(message = INVALID_UID)
-            String uid
+            @NotNull
+            @Positive(message = INVALID_ID)
+            Long id
     ) {
-        return ResponseEntity.ok(visitService.findViewByUid(uid));
+        return ResponseEntity.ok(visitService.findById(id));
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ViewDoctorDto> create(
+    public ResponseEntity<ViewVisitDto> create(
             @RequestBody
-            @Valid NewDoctorDto dto,
-
+            @Valid NewVisitDto dto,
             UriComponentsBuilder uriComponentsBuilder
-    ) {
 
-        visitService.create(dto);
+    ) throws URISyntaxException {
+
+        var id = visitService.create(dto);
 
         return ResponseEntity
                 .created(uriComponentsBuilder
                         .path("/api/visits")
-                        .path("/{uid}")
-                        .build(dto.uid())
+                        .path("/{id}")
+                        .build(id)
                 )
                 .build();
     }
 
-    @PutMapping("/{uid}/edit")
-    public ResponseEntity<ViewDoctorDto> update(
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ViewVisitDto> delete(
             @PathVariable
-            @NotBlank(message = INVALID_UID)
-            String uid,
-
-            @RequestBody
-            @Valid
-            EditDoctorDto dto
+            @NotNull
+            @Positive(message = INVALID_ID)
+            Long id
     ) {
-        return ResponseEntity.ok(doctorService.update(uid, dto));
-    }
-
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<ViewDoctorDto> delete(
-//            @PathVariable
-//            @Positive
-//            Long id
-//    ) {
-//        doctorService.delete(id);
-//        return ResponseEntity.noContent().build();
-//    }
-
-    @DeleteMapping("/{uid}")
-    public ResponseEntity<ViewDoctorDto> deleteByName(
-            @PathVariable
-            @NotBlank
-            String uid
-    ) {
-        doctorService.delete(uid);
+        visitService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

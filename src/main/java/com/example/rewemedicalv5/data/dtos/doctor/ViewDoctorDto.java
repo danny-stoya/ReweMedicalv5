@@ -9,7 +9,6 @@ import lombok.NonNull;
 import java.time.LocalDate;
 import java.util.Set;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public record ViewDoctorDto(
         @NotBlank
         String uid,

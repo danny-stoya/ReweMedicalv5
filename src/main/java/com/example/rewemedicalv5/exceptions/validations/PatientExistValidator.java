@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class UniquePatientUidValidator implements ConstraintValidator<UniquePatientUid, String> {
+public class PatientExistValidator implements ConstraintValidator<PatientExist, String> {
     private PatientRepository patientRepository;
 
     @Override
     public boolean isValid(String uid, ConstraintValidatorContext context) {
-        return patientRepository.findByUid(uid).isEmpty();
+        return uid != null && patientRepository.findByUid(uid).isPresent();
     }
 }

@@ -5,8 +5,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
@@ -25,9 +28,10 @@ public class ErrorResponse {
 
     public ErrorResponse() {
         this.timestamp = LocalDateTime.now();
+        errors = new HashMap<>();
     }
 
-    public ErrorResponse(String uri, HttpStatus status,
+        public ErrorResponse(String uri, HttpStatus status,
                          int code, String message) {
         this();
         this.uri = uri;
@@ -46,6 +50,5 @@ public class ErrorResponse {
         this.message = message;
         this.errors = errors;
     }
-
 
 }

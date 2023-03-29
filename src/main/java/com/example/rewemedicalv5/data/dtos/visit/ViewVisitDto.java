@@ -1,8 +1,12 @@
 package com.example.rewemedicalv5.data.dtos.visit;
 
 import com.example.rewemedicalv5.data.dtos.diagnosis.ViewDiagnosisDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,8 +17,10 @@ public record ViewVisitDto(
         Long id,
 
         @NotNull
-        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-        LocalDateTime dateTime,
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        @JsonProperty()
+        LocalDateTime time,
 
         @NotNull
         VisitPatientDto patient,

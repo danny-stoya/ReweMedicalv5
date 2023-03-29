@@ -7,13 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -22,21 +21,18 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@IdClass(VisitId.class)
-public class Visit {
-    @Id
+@SQLDelete(sql = "UPDATE visits set deleted = true where id = ?")
+@Where(clause = "deleted=false")
+public class Visit extends BaseEntity {
     @NotNull
     @FutureOrPresent
-    @Column(nullable = false, name = "date_time")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Column(name = "visit_time", nullable = false)
     private LocalDateTime visitTime;
 
-    @Id
     @NotNull
     @ManyToOne(optional = false)
     private Patient patient;
 
-    @Id
     @NotNull
     @ManyToOne(optional = false)
     private Doctor doctor;
@@ -46,4 +42,8 @@ public class Visit {
 
     @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     private Set<Diagnosis> diagnoses = new HashSet<>();
+
+    @ColumnDefault("false")
+    private boolean deleted = Boolean.FALSE;
+
 }

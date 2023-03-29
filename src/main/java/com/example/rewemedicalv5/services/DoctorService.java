@@ -8,6 +8,7 @@ import com.example.rewemedicalv5.data.entities.Doctor;
 import com.example.rewemedicalv5.data.entities.Specialty;
 import com.example.rewemedicalv5.data.repositories.DoctorRepository;
 import com.example.rewemedicalv5.exceptions.DoctorNotFound;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,14 +32,6 @@ public class DoctorService {
         );
     }
 
-//    public ViewDoctorDto findById(Long id) {
-//        return toView(
-//                doctorRepository
-//                        .findById(id)
-//                        .orElseThrow(() -> new DoctorNotFound(id))
-//        );
-//    }
-
     public ViewDoctorDto update(String uid, EditDoctorDto dto) {
         return toView(
                 doctorRepository.save(
@@ -47,15 +40,15 @@ public class DoctorService {
         );
     }
 
-//    public void delete(Long id) {
-//        doctorRepository.deleteById(id);
-//    }
-
     public void delete(String uid) {
         doctorRepository.delete(
                 findByUid(uid)
         );
     }
+
+//    public void delete(Long id) {
+//        doctorRepository.deleteById(id);
+//    }
 
     public ViewDoctorDto findViewByUid(String uid) {
         return toView(findByUid(uid));
@@ -94,7 +87,8 @@ public class DoctorService {
                 dto.birthDate(),
                 dto.uid(),
                 dto.isGp(),
-                mapSpecialties(dto.specialties())
+                mapSpecialties(dto.specialties()),
+                false
         );
     }
 

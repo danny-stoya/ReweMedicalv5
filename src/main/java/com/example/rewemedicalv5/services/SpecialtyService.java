@@ -63,7 +63,7 @@ public class SpecialtyService {
     }
 
     private Specialty toEntity(NewSpecialtyDto dto) {
-        return new Specialty(dto.name());
+        return new Specialty(dto.name(),false);
     }
 
     private ViewSpecialtyDto toView(Specialty specialty) {

@@ -9,10 +9,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-@Constraint(validatedBy = UniquePatientUidValidator.class)
-public @interface UniquePatientUid {
-    String message() default "Patient already exist";
+@Target(ElementType.TYPE)
+@Constraint(validatedBy = VisitAvailabilityValidator.class)
+public @interface VisitAvailability {
+    String message() default "Visit already taken. Please select different time";
 
     Class<?>[] groups() default {};
 

@@ -1,50 +1,54 @@
 package com.example.rewemedicalv5.services;
 
+import com.example.rewemedicalv5.data.dtos.fee.NewFeeDto;
+import com.example.rewemedicalv5.data.dtos.fee.UpdateFeeDto;
 import com.example.rewemedicalv5.data.entities.Fee;
 import com.example.rewemedicalv5.data.repositories.FeeRepository;
-import jakarta.annotation.PostConstruct;
+import com.example.rewemedicalv5.exceptions.FeeNotFound;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class FeeService {
-    private static final BigDecimal DEFAULT_FEE_2023 = BigDecimal.valueOf(80.00);
-    private static final BigDecimal INSURANCE_COVER = BigDecimal.valueOf(0);
     private final FeeRepository feeRepository;
 
-    @PostConstruct
-    private void init() {
-        if (feeRepository.count() > 0) {
-            return;
-        }
-
-        feeRepository.save(new Fee(INSURANCE_COVER));
-        feeRepository.save(new Fee(DEFAULT_FEE_2023));
+    public Fee getFeeByDate(LocalDate forDate) {
+        return feeRepository.findByDateBetween(forDate);
     }
 
-    public void addFee(BigDecimal newValue) {
-        var fee = feeRepository.findById(2L).get();
-        fee.setValue(newValue);
-        feeRepository.save(fee);
+    public Fee getInsuranceCover() {
+        return feeRepository.getInsuranceCover();
     }
 
-    public Fee getDefaultFee() {
-        return feeRepository
-                .findById(2L)
-                .orElse(new Fee(DEFAULT_FEE_2023));
+    public void addFee(NewFeeDto dto) {
+        feeRepository.save(
+                new Fee(dto.value(),
+                        dto.startDate(),
+                        dto.endDate(),
+                        false)
+        );
     }
 
-    public Fee geInsuranceCover() {
-        return feeRepository
-                .findById(1L)
-                .orElse(new Fee(INSURANCE_COVER));
-    }
 
-    private BigDecimal format(BigDecimal value) {
+    public BigDecimal format(BigDecimal value) {
         return value.setScale(2, RoundingMode.HALF_EVEN);
     }
 
+    public List<Fee> getAll() {
+        return feeRepository.findAll();
+    }
+
+    public void editFee(Long id, @Valid UpdateFeeDto dto) {
+        var fee = feeRepository.findById(id)
+                .orElseThrow(() -> new FeeNotFound(id));
+
+        fee.setValue(dto.value());
+        feeRepository.save(fee);
+    }
 }

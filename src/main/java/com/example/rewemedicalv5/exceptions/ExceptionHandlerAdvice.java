@@ -3,12 +3,10 @@ package com.example.rewemedicalv5.exceptions;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -23,6 +21,7 @@ public class ExceptionHandlerAdvice {
             EntityNotFound e,
             HttpServletRequest request
     ) {
+
         return buildResponse(new ErrorResponse(
                 request.getRequestURI(),
                 NOT_FOUND,
@@ -36,11 +35,13 @@ public class ExceptionHandlerAdvice {
             ConstraintViolationException e,
             HttpServletRequest request
     ) {
+
         return buildResponse(new ErrorResponse(
                 request.getRequestURI(),
                 BAD_REQUEST,
                 BAD_REQUEST.value(),
-                mapViolations(e)
+                violationMsg(e)
+
         ));
     }
 
@@ -49,21 +50,26 @@ public class ExceptionHandlerAdvice {
             MethodArgumentNotValidException e,
             HttpServletRequest request
     ) {
+        boolean count = e.getBindingResult().getFieldErrorCount() > 0;
+
         return buildResponse(new ErrorResponse(
                 request.getRequestURI(),
                 BAD_REQUEST,
                 BAD_REQUEST.value(),
-                "Invalid arguments",
-                mapValidationErrors(e)
+                count ? "Invalid arguments" : e.getBindingResult().getAllErrors().get(0).getDefaultMessage(),
+                count ? mapValidationErrors(e) : null
         ));
     }
 
-    private static HashMap<String, String> mapValidationErrors(MethodArgumentNotValidException e) {
+    private static HashMap<String, String> mapValidationErrors(
+            MethodArgumentNotValidException e
+    ) {
         var errors = new HashMap<String, String>();
 
         e.getBindingResult()
                 .getFieldErrors()
-                .forEach(fieldError -> errors.put(
+                .forEach(fieldError ->
+                        errors.put(
                                 fieldError.getField(),
                                 fieldError.getDefaultMessage()
                         )
@@ -72,11 +78,12 @@ public class ExceptionHandlerAdvice {
         return errors;
     }
 
-    private static String mapViolations(ConstraintViolationException e) {
+    private static String violationMsg(ConstraintViolationException e) {
         return e.getConstraintViolations()
                 .stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(System.lineSeparator()));
+
     }
 
     private ResponseEntity<Object> buildResponse(ErrorResponse errorResponse) {

@@ -13,6 +13,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
+
 public class DiagnosisService {
     private final DiagnosisRepository diagnosisRepository;
 
@@ -78,7 +79,8 @@ public class DiagnosisService {
     private Diagnosis toEntity(NewDiagnosisDto dto) {
         return new Diagnosis(
                 dto.code(),
-                dto.description()
+                dto.description(),
+                false
         );
     }
 

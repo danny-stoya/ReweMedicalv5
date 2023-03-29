@@ -9,10 +9,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-@Constraint(validatedBy = UniqueDoctorUIDValidator.class)
-public @interface UniqueDoctorUID {
-    String message() default "Doctor already exist";
+@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Constraint(validatedBy = DoctorExistValidator.class)
+public @interface DoctorExist {
+    String message() default "Doctor not found";
 
     Class<?>[] groups() default {};
 

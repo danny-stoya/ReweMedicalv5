@@ -1,27 +1,38 @@
 package com.example.rewemedicalv5.data.dtos.visit;
 
+import com.example.rewemedicalv5.exceptions.validations.VisitAvailability;
+import com.example.rewemedicalv5.exceptions.validations.DoctorExist;
+import com.example.rewemedicalv5.exceptions.validations.PatientExist;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
+@VisitAvailability
 public record NewVisitDto(
-        //validate by time and doctor
         @NotNull
         @FutureOrPresent
-        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-        LocalDateTime dateTime,
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        LocalDateTime visitTime,
 
-        @NotNull
+        @NotBlank
+        @Size(min = 3)
+        @PatientExist
         String patientUid,
 
-        @NotNull
+        @NotBlank
+        @Size(min = 3)
+        @DoctorExist
         String doctorUid,
 
         Set<String> diagnoses
-
+//HttpMessageNotReadableException default 400 exception
 ) {
 }

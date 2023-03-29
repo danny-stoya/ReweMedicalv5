@@ -9,14 +9,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.NaturalId;
-
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 @Entity
 @Table(name = "diagnoses")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE diagnoses set deleted = true where id = ?")
+@Where(clause = "deleted=false")
 public class Diagnosis extends BaseEntity {
     @NotBlank
     @NaturalId
@@ -26,4 +30,8 @@ public class Diagnosis extends BaseEntity {
     @NotBlank
     @Column(nullable = false)
     private String description;
+
+    @ColumnDefault("false")
+    private boolean deleted = Boolean.FALSE;
+
 }

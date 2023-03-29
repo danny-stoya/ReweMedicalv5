@@ -3,10 +3,10 @@ package com.example.rewemedicalv5.web;
 import com.example.rewemedicalv5.data.dtos.diagnosis.EditDiagnosisDto;
 import com.example.rewemedicalv5.data.dtos.diagnosis.NewDiagnosisDto;
 import com.example.rewemedicalv5.data.dtos.diagnosis.ViewDiagnosisDto;
-import com.example.rewemedicalv5.exceptions.validations.UniqueDiagnosisCode;
+import com.example.rewemedicalv5.exceptions.validations.DiagnosisExist;
 import com.example.rewemedicalv5.services.DiagnosisService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -15,7 +15,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
-import static com.example.rewemedicalv5.exceptions.InvalidValidationMessage.INVALID_DIAGNOSIS_CODE;
+import static com.example.rewemedicalv5.exceptions.FailedValidationMessage.INVALID_DIAGNOSIS_CODE_LENGTH;
+
 
 @RestController
 @RequestMapping("/api/diagnoses")
@@ -35,19 +36,11 @@ public class DiagnosisController {
         return ResponseEntity.ok(diagnoses);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<ViewDiagnosisDto> findById(
-//            @PathVariable
-//            @Positive(message = "Invalid ID")
-//            Long id
-//    ) {
-//        return ResponseEntity.ok(diagnosisService.findById(id));
-//    }
-
     @GetMapping("/{code}")
     public ResponseEntity<ViewDiagnosisDto> findViewByCode(
             @PathVariable
-            @NotBlank(message = INVALID_DIAGNOSIS_CODE)
+            @Size(min = 3, message = INVALID_DIAGNOSIS_CODE_LENGTH)
+            @DiagnosisExist
             String code
     ) {
         return ResponseEntity.ok(diagnosisService.findViewByCode(code));
@@ -75,7 +68,8 @@ public class DiagnosisController {
     @PutMapping("/{code}/edit")
     public ResponseEntity<ViewDiagnosisDto> update(
             @PathVariable
-            @NotBlank(message = INVALID_DIAGNOSIS_CODE)
+            @Size(min = 3, message = INVALID_DIAGNOSIS_CODE_LENGTH)
+            @DiagnosisExist
             String code,
 
             @RequestBody
@@ -95,11 +89,11 @@ public class DiagnosisController {
 //        return ResponseEntity.noContent().build();
 //    }
 
-    @DeleteMapping
+    @DeleteMapping("/{code}")
     public ResponseEntity<ViewDiagnosisDto> deleteByCode(
             @PathVariable
-            @NotBlank(message = INVALID_DIAGNOSIS_CODE)
-            String code
+            @Size(min = 3, message = INVALID_DIAGNOSIS_CODE_LENGTH)
+            @DiagnosisExist String code
     ) {
         diagnosisService.delete(code);
         return ResponseEntity.noContent().build();

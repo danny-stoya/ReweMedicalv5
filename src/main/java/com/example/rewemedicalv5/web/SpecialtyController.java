@@ -4,21 +4,26 @@ import com.example.rewemedicalv5.data.dtos.diagnosis.ViewDiagnosisDto;
 import com.example.rewemedicalv5.data.dtos.specialty.EditSpecialtyDto;
 import com.example.rewemedicalv5.data.dtos.specialty.NewSpecialtyDto;
 import com.example.rewemedicalv5.data.dtos.specialty.ViewSpecialtyDto;
+import com.example.rewemedicalv5.exceptions.validations.SpecialtyExists;
 import com.example.rewemedicalv5.services.SpecialtyService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
-import static com.example.rewemedicalv5.exceptions.InvalidValidationMessage.INVALID_SPECIALTY_NAME;
+import static com.example.rewemedicalv5.exceptions.FailedValidationMessage.INVALID_SPECIALTY_NAME;
+import static com.example.rewemedicalv5.exceptions.FailedValidationMessage.INVALID_SPECIALTY_NAME_LENGTH;
 
 @RestController
 @RequestMapping("/api/specialties")
 @AllArgsConstructor
+@Validated
 public class SpecialtyController {
     private final SpecialtyService specialtyService;
 
@@ -45,7 +50,8 @@ public class SpecialtyController {
     @GetMapping("/{name}")
     public ResponseEntity<ViewSpecialtyDto> getSpecialtyViewByName(
             @PathVariable
-            @NotBlank(message = INVALID_SPECIALTY_NAME)
+            @Size(min = 3, message = INVALID_SPECIALTY_NAME_LENGTH)
+            @SpecialtyExists
             String name
     ) {
         return ResponseEntity.ok(
@@ -75,7 +81,8 @@ public class SpecialtyController {
     @PutMapping("/{name}/edit")
     public ResponseEntity<ViewSpecialtyDto> update(
             @PathVariable
-            @NotBlank(message = INVALID_SPECIALTY_NAME)
+            @Size(min = 3, message = INVALID_SPECIALTY_NAME)
+            @SpecialtyExists
             String name,
 
             @RequestBody

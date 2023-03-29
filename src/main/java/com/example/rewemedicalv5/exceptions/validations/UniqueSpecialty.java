@@ -8,11 +8,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-@Constraint(validatedBy = UniqueDiagnosisCodeValidator.class)
-public @interface UniqueDiagnosisCode {
-    String message() default "Diagnosis already exist";
+@Target(ElementType.TYPE)
+@Constraint(validatedBy = UniqueSpecialtyValidator.class)
+public @interface UniqueSpecialty {
+    String message() default "Specialty already exist";
 
     Class<?>[] groups() default {};
 

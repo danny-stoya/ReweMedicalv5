@@ -6,7 +6,6 @@ import lombok.NonNull;
 
 import java.util.Set;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public record ViewPatientDto(
         @NonNull
         String uid,
@@ -15,6 +14,7 @@ public record ViewPatientDto(
         String name,
 
         String gpUid,
+
         Set<ViewInsuranceDto> insurances
 ) {
 }
